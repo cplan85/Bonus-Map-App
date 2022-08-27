@@ -1,3 +1,5 @@
+import { PlacesService } from './../../services/places.service';
+import { MapService } from './../../services/map.service';
 import { Component, OnInit } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 
@@ -8,10 +10,16 @@ import mapboxgl from 'mapbox-gl';
 })
 export class BtnMyLocationComponent {
 
-  constructor() { }
+  constructor(private mapService: MapService,
+    private placesService: PlacesService) { }
 
   goToMyLocation() {
- console.log('my location')
+ 
+    if (!this.placesService.isUserLocationReady) throw Error('there is no location for the user.');
+    if (!this.mapService.isMapReady) throw Error('The map is not ready')
+    this.mapService.flyTo(this.placesService.userLocation!)
   }
+
+
 
 }
