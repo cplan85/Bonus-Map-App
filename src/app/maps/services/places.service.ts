@@ -1,3 +1,4 @@
+import { MapService } from './map.service';
 import { PlacesApiClient } from './../api/placesApiClient';
 import { PlacesResponse, Feature } from './../interfaces/places';
 import { HttpClient } from '@angular/common/http';
@@ -15,7 +16,8 @@ get isUserLocationReady(): boolean {
   return !!this.userLocation
 }
 
-  constructor(private placesApi: PlacesApiClient) {
+  constructor(private placesApi: PlacesApiClient,
+    private mapService: MapService) {
     this.getUserLocation();
    }
 
@@ -35,6 +37,11 @@ get isUserLocationReady(): boolean {
   }
 
   getPlacesByQuery(query: string ='') {
+    if (query.length === 0) {
+      this.places = [];
+      this.isLoadingPlaces = false;
+      return;
+    }
 
     if (!this.userLocation) throw Error('There is no userLocation')
 
@@ -49,6 +56,8 @@ get isUserLocationReady(): boolean {
 
       this.isLoadingPlaces = false;
       this.places = resp.features;
+
+      this.mapService.createMarkersFromPlaces(this.places, this.userLocation!)
 
     });
 
